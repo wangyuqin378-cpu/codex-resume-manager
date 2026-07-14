@@ -1,0 +1,49 @@
+# Dependencies and generated output
+node_modules/
+dist/
+release/
+coverage/
+artifacts/
+*.tsbuildinfo
+*.tgz
+*.dmg
+*.zip
+
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+.npmrc
+auth.json
+*.pem
+*.key
+*.p12
+*.mobileprovision
+
+# Local Codex / guardian runtime data (normally stored outside this repo)
+state.json
+app-location.json
+commands/
+acknowledgements/
+.dead-letter/
+*.jsonl
+*.sqlite
+*.sqlite-*
+*.db
+
+# Logs and temporary files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tmp
+*.tmp-*
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

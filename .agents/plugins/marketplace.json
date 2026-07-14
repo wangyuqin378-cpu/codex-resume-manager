@@ -1,0 +1,32 @@
+{
+  "name": "codex-resume-manager-local",
+  "version": "0.3.0",
+  "description": "Local Codex plugins for keeping interrupted tasks moving after usage limits reset.",
+  "owner": {
+    "name": "Codex Resume Manager"
+  },
+  "interface": {
+    "displayName": "Codex Resume Manager"
+  },
+  "plugins": [
+    {
+      "name": "codex-auto-resume",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex-auto-resume"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "description": "Turn automatic quota recovery on or off for the current Codex task without recreating it elsewhere.",
+      "category": "Productivity",
+      "keywords": [
+        "codex",
+        "auto-resume",
+        "usage-limit",
+        "continuity"
+      ]
+    }
+  ]
+}

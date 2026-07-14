@@ -1,0 +1,23 @@
+{
+  "name": "codex-resume-manager",
+  "version": "0.3.0",
+  "private": true,
+  "description": "A local macOS guardian that resumes opted-in Codex tasks after usage limits reset.",
+  "main": "dist/main.cjs",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "npm run build && electron .",
+    "test": "node --import tsx --test --test-concurrency=1 test/*.test.ts && node --test plugins/codex-auto-resume/test/*.test.mjs",
+    "check": "tsc --noEmit && npm test && npm run build",
+    "package:mac": "npm run build && electron-packager . CodexResumeManager --platform=darwin --arch=arm64 --app-bundle-id=app.codexresumemanager.desktop --out=release --overwrite --prune=true --ignore='^/(src|test|scripts|artifacts|resources|node_modules|\\.agents|\\.github)($|/)' --ignore='^/plugins/codex-auto-resume/test($|/)' --ignore='^/(README\\.md|PRIVACY\\.md|SECURITY\\.md|tsconfig\\.json|\\.gitignore)$'"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.0.2",
+    "@types/node": "^26.1.1",
+    "electron": "^43.1.0",
+    "esbuild": "^0.28.1",
+    "tsx": "^4.23.0",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "codex-auto-resume",
+  "version": "0.3.0",
+  "description": "Enable, disable, or inspect automatic quota recovery for the current Codex task.",
+  "author": {
+    "name": "Codex Resume Manager"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "codex",
+    "auto-resume",
+    "usage-limit",
+    "continuity"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks.json",
+  "interface": {
+    "displayName": "自动续跑",
+    "shortDescription": "让当前 Codex 任务在额度刷新后自动继续",
+    "longDescription": "在当前 Codex 任务内开启、关闭或查看自动续跑，不需要在另一个应用里重新创建任务。",
+    "developerName": "Codex Resume Manager",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "开启自动续跑",
+      "关闭自动续跑",
+      "查看自动续跑状态"
+    ],
+    "brandColor": "#167D69",
+    "screenshots": []
+  }
+}

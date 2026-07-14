@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT:?Codex plugin root is unavailable}/scripts/control-hook.mjs\"",
+            "timeout": 5,
+            "statusMessage": "正在等待管家确认自动续跑设置"
+          }
+        ]
+      }
+    ]
+  }
+}

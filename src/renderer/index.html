@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="color-scheme" content="light" />
+    <title>Codex 自动续跑守护</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#guarded-threads">跳到受守护任务</a>
+
+    <div class="app-shell">
+      <header class="masthead">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">
+            <span class="orbit orbit-a"></span>
+            <span class="orbit orbit-b"></span>
+            <span class="brand-core"></span>
+          </span>
+          <div>
+            <p class="eyebrow">Codex continuity</p>
+            <h1>自动续跑守护</h1>
+          </div>
+        </div>
+
+        <div class="runtime-cluster">
+          <p id="runtime-status" class="runtime-status" data-state="starting">
+            <span class="status-light" aria-hidden="true"></span>
+            <span>正在连接 Codex</span>
+          </p>
+          <button
+            id="refresh-button"
+            class="icon-button"
+            type="button"
+            aria-label="刷新额度与任务状态"
+          >
+            <span class="refresh-icon" aria-hidden="true">↻</span>
+            <span>刷新</span>
+          </button>
+          <button id="quit-button" class="quiet-button" type="button">停止后台并退出</button>
+        </div>
+      </header>
+
+      <div id="system-notice" class="system-notice" role="status" hidden>
+        <span class="notice-icon" aria-hidden="true">!</span>
+        <div>
+          <strong id="system-notice-title">守护服务暂不可用</strong>
+          <p id="system-notice-text"></p>
+        </div>
+      </div>
+
+      <section class="quota-board" aria-labelledby="quota-heading">
+        <div class="quota-heading-row">
+          <div>
+            <p class="section-kicker on-dark">当前额度</p>
+            <h2 id="quota-heading">还剩多少额度</h2>
+          </div>
+          <div class="guard-summary" aria-label="受守护任务摘要">
+            <div>
+              <strong id="guarded-count">0</strong>
+              <span>受守护</span>
+            </div>
+            <span class="summary-divider" aria-hidden="true"></span>
+            <div>
+              <strong id="waiting-count">0</strong>
+              <span>等额度</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="quota-empty" class="quota-empty" role="status">
+          <span class="quota-empty-pulse" aria-hidden="true"></span>
+          <span id="quota-empty-text">正在读取 Codex 额度…</span>
+        </div>
+
+        <div id="quota-tracks" class="quota-tracks" hidden>
+          <article class="quota-window" data-quota="primary">
+            <div class="quota-window-head">
+              <div>
+                <p class="quota-label" data-field="label">5 小时额度</p>
+                <p class="quota-refresh">
+                  <span>刷新于</span>
+                  <time data-field="reset-time">—</time>
+                </p>
+              </div>
+              <p class="quota-remaining">
+                <strong data-field="remaining">—</strong><span>% 剩余</span>
+              </p>
+            </div>
+            <div
+              class="time-track"
+              data-field="progress"
+              role="progressbar"
+              aria-label="5 小时额度剩余"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <span class="track-fill" aria-hidden="true"></span>
+              <span class="track-head" aria-hidden="true"></span>
+            </div>
+            <div class="quota-window-foot">
+              <span data-field="duration">滚动窗口</span>
+              <strong data-field="countdown">Codex 当前未提供此窗口</strong>
+            </div>
+          </article>
+
+          <article class="quota-window" data-quota="secondary">
+            <div class="quota-window-head">
+              <div>
+                <p class="quota-label" data-field="label">周额度</p>
+                <p class="quota-refresh">
+                  <span>刷新于</span>
+                  <time data-field="reset-time">—</time>
+                </p>
+              </div>
+              <p class="quota-remaining">
+                <strong data-field="remaining">—</strong><span>% 剩余</span>
+              </p>
+            </div>
+            <div
+              class="time-track"
+              data-field="progress"
+              role="progressbar"
+              aria-label="周额度剩余"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <span class="track-fill" aria-hidden="true"></span>
+              <span class="track-head" aria-hidden="true"></span>
+            </div>
+            <div class="quota-window-foot">
+              <span data-field="duration">滚动窗口</span>
+              <strong data-field="countdown">Codex 当前未提供此窗口</strong>
+            </div>
+          </article>
+          <div id="quota-extra" class="quota-extra" hidden></div>
+        </div>
+
+        <p id="quota-updated" class="quota-updated" aria-live="polite"></p>
+      </section>
+
+      <section class="activation-card" aria-labelledby="activation-heading">
+        <div class="activation-marker" aria-hidden="true">
+          <span></span>
+        </div>
+        <div class="activation-copy">
+          <p class="section-kicker">在 Codex 里开启</p>
+          <h2 id="activation-heading">对当前任务说这句话</h2>
+          <p>不需要在这里重新创建任务。守护会接住这个 Codex 任务的额度中断。</p>
+          <p id="activation-guidance">正在确认插件与 Hook 是否就绪…</p>
+          <p id="hook-readiness" class="hook-readiness" data-state="checking">正在检查</p>
+        </div>
+        <div class="command-control">
+          <code id="activation-command">开启自动续跑</code>
+          <button id="copy-command-button" class="copy-button" type="button">
+            复制
+          </button>
+        </div>
+      </section>
+
+      <main id="guarded-threads" class="thread-panel" aria-labelledby="threads-heading">
+        <div class="thread-panel-head">
+          <div>
+            <p class="section-kicker">Codex 任务</p>
+            <h2 id="threads-heading">受守护的任务</h2>
+          </div>
+          <p id="threads-summary" class="threads-summary">0 个任务</p>
+        </div>
+
+          <div id="thread-list" class="thread-list" role="list" aria-live="polite"></div>
+
+        <div id="threads-empty" class="empty-state">
+          <div class="empty-rail" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div>
+            <h3>还没有开启守护</h3>
+            <p>回到任意 Codex 任务，说“开启自动续跑”。开启后，它会自动出现在这里。</p>
+          </div>
+        </div>
+      </main>
+
+      <section class="activity-panel" aria-labelledby="activity-heading">
+        <div class="thread-panel-head">
+          <div>
+            <p class="section-kicker">运行记录</p>
+            <h2 id="activity-heading">最近发生了什么</h2>
+          </div>
+        </div>
+        <ol id="activity-list" class="activity-list"></ol>
+        <p id="activity-empty" class="activity-empty">还没有自动续跑记录。</p>
+      </section>
+
+      <footer class="app-footer">
+        <p>
+          <span class="local-dot" aria-hidden="true"></span>
+          状态只保存在这台 Mac，不读取隐藏推理或认证文件
+        </p>
+        <button id="clear-data-button" class="clear-data-button" type="button">
+          清除全部本机守护数据
+        </button>
+        <p id="codex-version" class="codex-version">Codex —</p>
+      </footer>
+    </div>
+
+    <template id="thread-card-template">
+      <article class="thread-card" role="listitem">
+        <div class="thread-state-rail" aria-hidden="true">
+          <span class="state-node"></span>
+          <span class="state-line"></span>
+        </div>
+
+        <div class="thread-content">
+          <header class="thread-header">
+            <div class="thread-title-group">
+              <div class="thread-meta">
+                <span class="status-pill"></span>
+                <time class="thread-updated"></time>
+              </div>
+              <h3 class="thread-title">Codex 任务</h3>
+            </div>
+            <button class="thread-toggle primary-action" type="button"></button>
+          </header>
+
+          <p class="thread-path"></p>
+
+          <div class="thread-id-row">
+            <span>任务 ID</span>
+            <code class="thread-id"></code>
+            <button class="copy-thread-id" type="button">复制</button>
+          </div>
+
+          <div class="thread-next-step">
+            <span class="next-step-label">接下来</span>
+            <div>
+              <strong class="next-step-title"></strong>
+              <p class="next-step-detail"></p>
+            </div>
+          </div>
+
+          <div class="thread-error" role="status" hidden>
+            <span aria-hidden="true">!</span>
+            <div>
+              <strong>需要你看一下</strong>
+              <p class="thread-error-message"></p>
+            </div>
+          </div>
+
+          <footer class="thread-footer">
+            <p class="thread-safety">检测到你在 Codex 中手动继续时，会暂停自动续跑，避免重复执行</p>
+            <button class="remove-thread" type="button">移除并关闭守护</button>
+          </footer>
+        </div>
+      </article>
+    </template>
+
+    <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>
